@@ -9,7 +9,7 @@ public class Program
     public static void Main(string[] args)
     {
         Console.Write("Enter the file's path: ");
-        string path = Console.ReadLine()!;
+        string path = Console.ReadLine()!.Trim('"');
         if (!File.Exists(path))
         {
             Console.WriteLine($"File note not found at {path}");
@@ -99,7 +99,16 @@ public class Program
             Console.WriteLine($"Notes to write: {notes?.Count ?? 0}");
 
             JsonSerializerOptions options = new JsonSerializerOptions { WriteIndented = true };
-            string json = JsonSerializer.Serialize(notes, options);
+
+            // Build the desired structure with bpm and musicVideoPath first, then the beats array.
+            var output = new
+            {
+                bpm = 120,
+                musicVideoPath = "OpeningMusicVideo",
+                beats = notes
+            };
+
+            string json = JsonSerializer.Serialize(output, options);
 
             File.WriteAllText(fullPath, json);
 
@@ -174,7 +183,7 @@ public class Program
             error = "invalid X position";
             return false;
         }
-        if (double.Parse(f[5]) > 1 || double.Parse(f[5]) < 0)
+        if (xPos > 1 || xPos < 0)
         {
             error = "invalid X position - must be between 0 and 1";
             return false;
@@ -185,7 +194,7 @@ public class Program
             error = "invalid Y position";
             return false;
         }
-        if (double.Parse(f[6]) > 1 || double.Parse(f[6]) < 0)
+        if (yPos > 1 || yPos < 0)
         {
             error = "invalid Y position - must be between 0 and 1";
             return false;
